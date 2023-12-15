@@ -45,7 +45,7 @@ const config = input.config({
         }),
 		input.config.field('score', {
             label: 'Score',
-			description: "Si oui, sélectionnez le champ correspondant (sinon renseignez n'importe quel champ, il ne sera pas utilisé)",
+			description: "Si oui, sélectionnez le champ correspondant (de type pourcentage). Sinon renseignez n'importe quel champ, il ne sera pas utilisé",
             parentTable: 'table',
         })
     ]
@@ -119,8 +119,10 @@ async function nextBlock(queryResult, startIdx) {
   }
 };
 
-if (lat.type != 'number' || lon.type != 'number') {
-	output.markdown("**⚠ Le champ de latitude et/ou celui de longitude ne sont pas de type _nombre_! Modifiez-le(s) svp ou choisissez d'autres champs de type nombre**");
+if (lat.type != 'number' || lon.type != 'number' || (writeScore == 'yes' && score.type != 'percent')) {
+    if (lat.type != 'number') { output.markdown("**⚠ Le champ "+lat.name+" n'est pas de type _nombre_! Modifiez-le svp ou choisissez un autre champ de type nombre**"); }
+    if (lon.type != 'number') { output.markdown("**⚠ Le champ "+lon.name+" n'est pas de type _nombre_! Modifiez-le svp ou choisissez un autre champ de type nombre**"); }
+    if (writeScore == 'yes' && score.type != 'percent') { output.markdown("**⚠ Le champ "+score.name+" n'est pas de type _pourcentage_! Modifiez-le svp ou choisissez un autre champ de type pourcentage**"); }
 }
 else {
 	let queryResult = await view.selectRecordsAsync({fields: [identifier, address, lat, lon]});

@@ -3,8 +3,8 @@ Un script Airtable qui vous permet de géocoder des adresses **françaises** (l'
 
 ## Utilisation
 - le contenu du fichier address_geocoding_FR.js doit être copié dans une nouvelle Extension Scripting dans votre base Airtable (attention, les Extensions ne sont pas disponibles avec la souscription gratuite !)
-Une fois votre Extension créée, accédez à ses paramètres en cliquant sur l'icône en roue dentée ⛭ en haut à droite
-Les paramètres suivants permettent la configuration de l'Extension :
+
+Une fois votre Extension créée, accédez à ses paramètres en cliquant sur l'icône en roue dentée ⛭ en haut à droite. Les paramètres suivants permettent la configuration de l'Extension :
 - *Table* : la table dans laquelle se trouvent les adresses à géocoder
 - *Vue* : la vue contenant les adresses
 - *Identifiant* : un champ permettant d'identifer la saisie (par exemple Nom, Id, etc.)

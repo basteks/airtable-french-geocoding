@@ -80,20 +80,34 @@ async function nextBlock(queryResult, startIdx) {
             progress += 25;
         }
       if (record.getCellValueAsString(address.name)!="" && (record.getCellValueAsString(lat.name)=="" || record.getCellValueAsString(lon.name)=="")){
-          let request = "https://api-adresse.data.gouv.fr/search/?q="+encodeURI(record.getCellValueAsString(address.name));
-          let data = await fetch(request)
-          .then(response => response.json())
-          .catch(err => console.error(err));
+          var zipFound = false;
+          var zipCode = record.getCellValueAsString(address.name).match(/\d{5}/);
+          if (zipCode.length ==1 && zipCode[0].length == 5 && !isNaN(Number(zipCode[0]))) {
+              zipCode = zipCode[0];
+              zipFound = true;
+          }
+          if (zipFound) {
+            var request = "https://api-adresse.data.gouv.fr/search/?q="+encodeURI(record.getCellValueAsString(address.name).trim().replaceAll(' ','+'))+"&postcode="+zipCode+"&autocomplete=0&limit=1";
+            var data = await fetch(request)
+                .then(response => response.json())
+                .catch(err => console.error(err));
+          }
+          if(!zipFound || zipFound && data.features.length==0) { // Essai sans le code postal
+              request = "https://api-adresse.data.gouv.fr/search/?q="+encodeURI(record.getCellValueAsString(address.name).trim().replaceAll(' ','+'))+"&autocomplete=0&limit=1";
+              data = await fetch(request)
+                .then(response => response.json())
+                .catch(err => console.error(err));
+          }
    
           if (data.features[0].properties.score<scoreMinLimit) {
-            underLimitScores.push(record.getCellValueAsString(identifier.name)+" ("+record.getCellValueAsString(address.name)+")");
+            underLimitScores.push({"Identifiant": record.getCellValueAsString(identifier.name).trim(), "adresse": record.getCellValueAsString(address.name).trim(), "score": Math.round(data.features[0].properties.score*100)/100, "lat": data.features[0].geometry.coordinates[1],"lon": data.features[0].geometry.coordinates[0], "lien de vérification" : "https://www.openstreetmap.org/?mlat="+data.features[0].geometry.coordinates[1]+"&mlon="+data.features[0].geometry.coordinates[0]+"#map=13/"+data.features[0].geometry.coordinates[1]+"/"+data.features[0].geometry.coordinates[0]});
           }
 		  if (writeScore == "yes") {
 			await table.updateRecordsAsync([
 				  {
 					  id: record.id,
 					  fields: {
-						  [lat.name]: data.features[0].geometry.coordinates[1],
+						  [lat.name]: Number(data.features[0].geometry.coordinates[1]),
 						  [lon.name]: Number(data.features[0].geometry.coordinates[0]),
 						  [score.name]: data.features[0].properties.score
 					  }
@@ -105,7 +119,7 @@ async function nextBlock(queryResult, startIdx) {
 				  {
 					  id: record.id,
 					  fields: {
-						  [lat.name]: data.features[0].geometry.coordinates[1],
+						  [lat.name]: Number(data.features[0].geometry.coordinates[1]),
 						  [lon.name]: Number(data.features[0].geometry.coordinates[0])
 					  }
 				  }
@@ -133,8 +147,12 @@ else {
 
 	output.markdown("**Géocodage terminé !** Attention, le géocodage n'est pas une science exacte, pensez à vérifier vos résultats.")
 	if (underLimitScores.length>0) {
-		output.markdown('⚠ Vérifiez en particulier le géocodage pour les éléments suivants (score en-dessous de la valeur limite de '+scoreMinLimit.toString()+' renseignée):')
-		output.table(underLimitScores);
+		output.markdown('⚠ Vérifiez en particulier le géocodage pour les éléments suivants:')
+        for (let m=0;m<underLimitScores.length;m++) {
+            output.markdown("**"+underLimitScores[m]["Identifiant"]+"**");
+            output.table([{Adresse: underLimitScores[m]["adresse"], Latitude: underLimitScores[m]["lat"], Longitude: underLimitScores[m]["lon"], score: underLimitScores[m]["score"]}]);
+            output.markdown("[Lien de vérification]("+underLimitScores[m]["lien de vérification"]+")")
+        }
 	}
 	output.markdown("_Script terminé avec succès_");
 }

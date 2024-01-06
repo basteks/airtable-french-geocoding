@@ -1,19 +1,24 @@
-# Géocodage Airtable
-Un script Airtable qui vous permet de géocoder des adresses **françaises** (l'API ne reconnaît que des adresses françaises, cf. Crédits ci-dessous), basé sur les [Extensions Airtable](https://support.airtable.com/docs/airtable-extensions-overview).
+# Airtable French geocoding
 
-## Utilisation
-- le contenu du fichier address_geocoding_FR.js doit être copié dans une nouvelle Extension Scripting dans votre base Airtable (attention, les Extensions ne sont pas disponibles avec la souscription gratuite !)
+A script that allows you to geocode (convert address to GPS coordinates) your **french** addresses (the API onyly recognizes addresses from France), based on the [Airtable Extensions](https://support.airtable.com/docs/airtable-extensions-overview).
 
-Une fois votre Extension créée, accédez à ses paramètres en cliquant sur l'icône en roue dentée ⛭ en haut à droite. Les paramètres suivants permettent la configuration de l'Extension :
-- *Table* : la table dans laquelle se trouvent les adresses à géocoder
-- *Vue* : la vue contenant les adresses
-- *Identifiant* : un champ permettant d'identifer la saisie (par exemple Nom, Id, etc.)
-- *Adresse* : le champ contenant l'adresse à géocoder
-- *Latitude* : le champ contenant la latitude (de **type nombre**)
-- *Longitude* : le champ contenant la longitude (de **type nombre**)
-- *Valeur limite du "score" (pourcentage de fiabilité du géocodage)* : une valeur (comprise entre 0 et 1) en dessous de laquelle le géocodage sera considéré comme potentiellement problématique (par défaut j'utilise 0.6)
-- *Enregistrement du score* : un choix Oui/Non pour préciser si ce score de géocodage doit être sauvegardé pour chaque entrée
-- *Score* : si vous souhaitez effectivement sauvegarder le score, le champ (de **type pourcentage**) dans lequel l'enregistrer (sinon renseignez n'importe quel champ, il ne sera pas utilisé)
+## Usage
+- the content of the french-geocoding-airtable.js file needs to be copied in a new [Scripting Extension](https://support.airtable.com/docs/en/scripting-extension-overview) in your Airtable base (warning, Extensions are not available with free plan !)
 
-## Crédits
-Ce script utilise [l'API Adresse](https://adresse.data.gouv.fr/api-doc/adresse). N'oubliez pas que l'utilisation de cette API est soumise à une limite de 50 appels/sec/IP. Le script est conçu afin de ne pas dépasser cette limite.
+Once you create your Extension, access the settings page by clicking the gear icon that appears when hovering over the upper right corner.
+Here are the available settings :
+- *Table*: the table containing the addresses to geocode
+- *View*: the appropriate view (you can for example create a filtered view ensuring that the address field is not empty)
+- *Identifier*: a field allowig to identify a specific record
+- *Address*: the field containing the address you want to geocode
+- *Latitude*: the field that will store the latitude returned by the geocoding (**number type**)
+- *Longitude*: the field that will store the longitude returned by the geocoding (**number type**)
+- *Score minimum limit value (reliability percent of the geocoding)*: a value (between 0 and 1) below which the geocoding will be considered potentially problematic (by default I use 0.6)
+- *Save score*: do you want to store this geocoding score for each row ? The options are _yes_ or _no_
+- *Score*: if you actually want to store the score, the column (of **number/percent type**) used  for this data
+
+## Limitations
+Please keep in mind that use of the french [Address API](https://adresse.data.gouv.fr/api-doc/adresse) is subject to a limit of 50 calls/sec/IP. The script is designed not to exceed this limit.
+
+## Credits
+This script uses the french [Address API](https://adresse.data.gouv.fr/api-doc/adresse).
